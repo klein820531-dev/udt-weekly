@@ -46,7 +46,7 @@ body{margin:0;background:var(--ink);color:var(--text);font-family:var(--f-body);
 .segs{display:flex;gap:4px;padding-top:8px}
 .seg{flex:1;height:22px;padding:0;border:0;background:none;display:flex;align-items:center;cursor:pointer}
 .seg i{display:block;position:relative;overflow:hidden;width:100%;height:3px;border-radius:2px;background:var(--line)}
-.seg b{position:absolute;inset:0;width:0;background:var(--cyan)}
+.seg b{position:absolute;inset:0;width:100%;transform:scaleX(0);transform-origin:0 50%;background:var(--cyan);will-change:transform}
 .seg.ixseg b{background:var(--amber)}
 .fast .seg b{background:var(--amber)}
 .brand{display:flex;align-items:flex-start;justify-content:space-between;gap:10px;padding:4px 0 6px}
@@ -212,7 +212,10 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .vpbox{width:min(100%,calc(66dvh*9/16));aspect-ratio:9/16;margin:10px auto 12px;background:#000;border-radius:10px;overflow:hidden}
 .vpbox iframe{width:100%;height:100%;border:0;display:block}
 #vpYT{text-decoration:none}
-.vpbox.hubvid{width:min(100%,calc(60dvh*9/16));margin:6px auto 4px}
+.hubvid img{width:100%;height:100%;object-fit:cover;display:block}
+.hubvid .vplay{position:absolute;left:50%;top:50%;width:64px;height:64px;margin:-32px 0 0 -32px;border-radius:50%;background:rgba(6,10,18,.72);border:2px solid var(--cyan);display:grid;place-items:center}
+.hubvid .vplay svg{width:30px;height:30px;fill:var(--cyan)}
+.vpbox.hubvid{display:block;position:relative;padding:0;border:0;cursor:pointer;width:min(100%,calc(60dvh*9/16));margin:6px auto 4px}
 @media (max-width:380px){.hubbtns .btn{font-size:12px;padding:0 6px}}
 .legalnav{display:flex;justify-content:center;gap:4px;flex-wrap:wrap;margin-top:14px;padding-top:12px;border-top:1px solid var(--line)}
 .legalnav button{background:none;border:0;color:var(--muted);font:500 12px/1 var(--f-ui);padding:10px 8px;cursor:pointer;text-decoration:underline;text-underline-offset:3px}
@@ -1030,7 +1033,9 @@ a.proto{text-decoration:none}
     }
     document.getElementById('vpX').addEventListener('click',vpClose);
     vp.addEventListener('click',function(e){if(e.target===vp)vpClose()});
+    window.__vpOpen=vpOpen;
     document.addEventListener('click',function(e){
+      var hv=e.target.closest&&e.target.closest('.hubvid');if(hv&&hv.dataset.yt){e.preventDefault();vpOpen(hv.dataset.yt,'https://www.youtube.com/watch?v='+hv.dataset.yt);return}
       if(!CAN_EMBED)return;
       var a=e.target.closest&&e.target.closest('a[data-direct]');if(!a)return;
       var h=a.getAttribute('href')||'',id=ytId(h);if(!id)return;
@@ -1045,7 +1050,7 @@ a.proto{text-decoration:none}
     hl.innerHTML=REG.map(function(w,wi){
       var eid=(wi===0&&window.__canEmbed&&w.video)?window.__ytId(w.video):null;
       return '<div class="card hubcard"><span class="tag cyan">'+w.label+'</span><p>'+tr(w.title)+'</p><div class="meta"><span class="pill link">'+tr(w.range)+'</span></div>'+
-        (eid?'<div class="vpbox hubvid"><iframe src="https://www.youtube-nocookie.com/embed/'+eid+'?playsinline=1&rel=0" title="UDT" loading="lazy" allow="encrypted-media; picture-in-picture; fullscreen" allowfullscreen referrerpolicy="strict-origin-when-cross-origin"></iframe></div>':'')+
+        (eid?'<button type="button" class="vpbox hubvid" data-yt="'+eid+'" aria-label="'+tr('影片播放')+'"><img src="https://i.ytimg.com/vi/'+eid+'/hqdefault.jpg" alt="" loading="lazy" decoding="async"><span class="vplay"><svg viewBox="0 0 24 24"><path d="M8 5v14l11-7z"/></svg></span></button>':'')+
         '<div class="hubbtns"><a class="btn solid" href="#'+w.id+LSUF+'" data-w="'+w.id+'">'+tr('互動閱讀')+'</a>'+
         (w.video&&!eid&&/^https:\/\//.test(w.video)?'<a class="btn" data-direct="1" href="'+w.video+'" target="_blank" rel="noopener noreferrer">'+tr(/youtu\.?be/.test(w.video)?'看影片（YouTube）':'看影片（臉書）')+' ↗</a>':'')+'</div>'+
         (w.report&&/^https:\/\//.test(w.report)?'<div class="hubbtns"><a class="btn" href="'+w.report+'" target="_blank" rel="noopener noreferrer">'+tr('詳細報告（PDF）')+' ↗</a></div>':'')+'</div>';
@@ -1109,7 +1114,7 @@ a.proto{text-decoration:none}
     if(fresh&&t>.25&&!paused) sfx('blip',.5);
     for(var j=0;j<N;j++){
       var w=j<idx?100:(j===idx?(HOLD[j]?100:Math.min(100,t/DUR[idx]*100)):0);
-      segB[j].style.width=w+'%';
+      segB[j].style.transform='scaleX('+(w/100)+')';
     }
   }
   function go(i){
