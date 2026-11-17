@@ -1195,16 +1195,20 @@ a.proto{text-decoration:none}
     },320);
   });
   stage.addEventListener('pointermove',function(e){
-    if(!pd||pd.long) return;
-    if(Math.hypot(e.clientX-pd.x,e.clientY-pd.y)>12){pd.moved=true;clearTimeout(pd.timer);}
+    if(!pd||pd.long||pd.done) return;
+    var mx=e.clientX-pd.x,my=e.clientY-pd.y;pd.lx=e.clientX;pd.ly=e.clientY;
+    if(Math.hypot(mx,my)>12){pd.moved=true;clearTimeout(pd.timer);}
+    // 滑動一過門檻就立刻換頁，不等手指放開（iPhone Safari 常在滑到一半送出 pointercancel，等放開會整個吃掉）
+    if(Math.abs(mx)>40&&Math.abs(mx)>Math.abs(my)*1.2){pd.done=true;mx<0?go(idx+1):go(idx-1);swallow();}
   });
   function up(e,cancel){
     if(!pd) return;
     var p=pd;pd=null;clearTimeout(p.timer);
     if(p.long){endFast();swallow();return;}
+    if(p.done) return;
     if(cancel) return;
     var dx=e.clientX-p.x,dy=e.clientY-p.y;
-    if(Math.abs(dx)>48&&Math.abs(dx)>Math.abs(dy)*1.5){ dx<0?go(idx+1):go(idx-1); swallow(); return; }
+    if(Math.abs(dx)>40&&Math.abs(dx)>Math.abs(dy)*1.2){ dx<0?go(idx+1):go(idx-1); swallow(); return; }
     if(p.moved){swallow();return;}
     var now=Date.now();
     var sr=stage.getBoundingClientRect(),right=e.clientX>sr.left+sr.width/2,prevRight=lastX>sr.left+sr.width/2;
