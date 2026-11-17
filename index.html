@@ -1065,7 +1065,7 @@ a.proto{text-decoration:none}
       var ok=function(u){return u&&/^https:\/\//.test(u)};
       return '<div class="card hubcard"><span class="tag cyan">'+tr(w.label)+'</span><p>'+tr(w.title)+'</p><p style="font-size:12.5px;color:var(--muted);margin:0">'+tr(w.summary)+'</p><div class="meta"><span class="pill link">'+tr(w.date)+'</span></div>'+
         '<div class="hubbtns">'+(ok(w.video)?'<a class="btn solid" data-direct="1" href="'+w.video+'" target="_blank" rel="noopener noreferrer">'+tr(/youtu\.?be/.test(w.video)?'看影片（YouTube）':'看影片（臉書）')+' ↗</a>':'<span class="evstat">'+tr('影片連結即將加入')+'</span>')+'</div>'+
-        (ok(w.report)?'<div class="hubbtns"><a class="btn" href="'+w.report+'" target="_blank" rel="noopener noreferrer">'+tr('詳細報告（Google 雲端）')+' ↗</a></div>':'')+'</div>';
+        (ok(w.report)?'<div class="hubbtns"><a class="btn" href="'+w.report+'" target="_blank" rel="noopener noreferrer">'+tr('詳細報告（PDF）')+' ↗</a></div>':'')+'</div>';
     }).join('');
     xl(document.getElementById('stage'));
     return;
