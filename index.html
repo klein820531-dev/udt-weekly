@@ -197,7 +197,7 @@ button:focus-visible{outline:2px solid var(--cyan);outline-offset:2px}
 .hero h2{margin:0;font:700 24px/1.2 var(--f-ui);letter-spacing:.06em}
 .hero .full{margin:6px 0 0;font:500 12.5px/1.5 var(--f-ui);letter-spacing:.03em;color:var(--muted)}
 .hero .tagline{margin:6px 0 0;padding:6px 10px;border-left:3px solid var(--amber);background:rgba(255,181,71,.08);font:600 15px/1.5 var(--f-body);letter-spacing:.08em;color:var(--text)}
-.hero-img{position:relative;line-height:0;margin-top:2px}
+.hero-img{position:relative;line-height:0;margin-top:2px;cursor:pointer;-webkit-tap-highlight-color:transparent}
 .hero-img img{width:100%;height:auto;display:block}
 .hero-img .ai{position:absolute;right:10px;bottom:8px;font:600 10.5px/1.6 var(--f-ui);letter-spacing:.08em;padding:0 7px;border:1px solid var(--line);border-radius:4px;color:var(--muted);background:rgba(6,10,18,.7)}
 .langbar{display:flex;gap:6px;margin:8px 0 0}
@@ -1258,6 +1258,13 @@ a.proto{text-decoration:none}
     document.getElementById('vpX').addEventListener('click',vpClose);
     vp.addEventListener('click',function(e){if(e.target===vp)vpClose()});
     window.__vpOpen=vpOpen;
+    // 輕觸首頁主播圖：捲到最新一週的卡片（使用者指定 2026-11-21）
+    document.addEventListener('click',function(e){
+      if(!e.target.closest||!e.target.closest('.hero-img'))return;
+      var card=document.querySelector('#hubList .hubcard'),hub=document.getElementById('hub');if(!card||!hub)return;
+      var top=hub.scrollTop+card.getBoundingClientRect().top-hub.getBoundingClientRect().top-8;
+      try{hub.scrollTo({top:top,behavior:'smooth'})}catch(_){hub.scrollTop=top}
+    });
     document.addEventListener('click',function(e){
       var hv=e.target.closest&&e.target.closest('.hubvid');if(hv&&hv.dataset.yt){e.preventDefault();vpOpen(hv.dataset.yt,'https://www.youtube.com/watch?v='+hv.dataset.yt);return}
       if(!CAN_EMBED)return;
